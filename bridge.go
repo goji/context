@@ -1,15 +1,13 @@
 package context
 
 import (
-	"golang.org/x/net/context"
 	"github.com/zenazn/goji/web"
+	"golang.org/x/net/context"
 )
 
 type private struct{}
 
-var ckey private
-
-const ContextKey = "go.net/context.Context"
+var ckey, contextkey private
 
 // FromC extracts the bound go.net/context.Context from a Goji context if one
 // has been set, or nil if one is not available.
@@ -17,7 +15,7 @@ func FromC(c web.C) context.Context {
 	if c.Env == nil {
 		return nil
 	}
-	v, ok := c.Env[ContextKey]
+	v, ok := c.Env[&ckey]
 	if !ok {
 		return nil
 	}
@@ -30,7 +28,7 @@ func FromC(c web.C) context.Context {
 // ToC extracts the bound Goji context from a go.net/context.Context if one has
 // been set, or the empty Goji context if one is not available.
 func ToC(ctx context.Context) web.C {
-	out := ctx.Value(&ckey)
+	out := ctx.Value(&contextkey)
 	if out == nil {
 		return web.C{}
 	}
@@ -50,10 +48,10 @@ func ToC(ctx context.Context) web.C {
 // decide to change it.
 func Set(c *web.C, context context.Context) context.Context {
 	if c.Env == nil {
-		c.Env = make(map[string]interface{})
+		c.Env = make(map[interface{}]interface{})
 	}
 
 	ctx := ctx{c, context}
-	c.Env[ContextKey] = ctx
+	c.Env[&ckey] = ctx
 	return ctx
 }

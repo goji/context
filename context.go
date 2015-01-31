@@ -2,8 +2,8 @@
 package context
 
 import (
-	"golang.org/x/net/context"
 	"github.com/zenazn/goji/web"
+	"golang.org/x/net/context"
 )
 
 type ctx struct {
@@ -15,8 +15,8 @@ func (c ctx) Value(key interface{}) interface{} {
 	if key == &ckey {
 		return c.c
 	}
-	if s, ok := key.(string); c.c.Env != nil && ok {
-		if v, ok := c.c.Env[s]; ok {
+	if c.c.Env != nil {
+		if v, ok := c.c.Env[key]; ok {
 			return v
 		}
 	}
